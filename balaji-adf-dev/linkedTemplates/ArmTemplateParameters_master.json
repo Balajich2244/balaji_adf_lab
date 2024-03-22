@@ -11,6 +11,12 @@
 		"ls_target_sql_connectionString": {
 			"value": ""
 		},
+		"ls_keyvault_properties_typeProperties_baseUrl": {
+			"value": "https://keyvaultadflab.vault.azure.net/"
+		},
+		"ls_keyvault_sql_properties_typeProperties_connectionString_secretName": {
+			"value": "balajitestlabdb"
+		},
 		"scheduletrigger_properties_incrementalload_parameters_tablelist": {
 			"value": [
 				{
