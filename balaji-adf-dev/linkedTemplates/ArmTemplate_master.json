@@ -89,24 +89,6 @@
 					},
 					"ls_keyvault_sql_properties_typeProperties_connectionString_secretName": {
 						"value": "[parameters('ls_keyvault_sql_properties_typeProperties_connectionString_secretName')]"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "balaji-adf-dev_ArmTemplate_1",
-			"type": "Microsoft.Resources/deployments",
-			"apiVersion": "2018-02-01",
-			"properties": {
-				"mode": "incremental",
-				"templateLink": {
-					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
-					"contentVersion": "1.0.0.0"
-				},
-				"parameters": {
-					"factoryName": {
-						"value": "[parameters('factoryName')]"
 					},
 					"scheduletrigger_properties_incrementalload_parameters_tablelist": {
 						"value": "[parameters('scheduletrigger_properties_incrementalload_parameters_tablelist')]"
@@ -119,9 +101,7 @@
 					}
 				}
 			},
-			"dependsOn": [
-				"[resourceId('Microsoft.Resources/deployments', 'balaji-adf-dev_ArmTemplate_0')]"
-			]
+			"dependsOn": []
 		}
 	]
 }

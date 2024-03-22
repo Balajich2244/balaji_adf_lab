@@ -22,6 +22,34 @@
 		"ls_keyvault_sql_properties_typeProperties_connectionString_secretName": {
 			"type": "string",
 			"defaultValue": "balajitestlabdb"
+		},
+		"scheduletrigger_properties_incrementalload_parameters_tablelist": {
+			"type": "array",
+			"defaultValue": [
+				{
+					"tableName": "iplteams",
+					"tableSchemaName": "dbo",
+					"WaterMark_Column": "last_updated"
+				},
+				{
+					"tableName": "employees",
+					"tableSchemaName": "dbo",
+					"WaterMark_Column": "last_updated"
+				},
+				{
+					"tableName": "salesitems",
+					"tableSchemaName": "dbo",
+					"WaterMark_Column": "last_updated"
+				}
+			]
+		},
+		"tumbling_window_properties_pipeline_parameters_startdate": {
+			"type": "string",
+			"defaultValue": "@trigger().outputs.windowStartTime\n"
+		},
+		"tumbling_window_properties_pipeline_parameters_enddate": {
+			"type": "string",
+			"defaultValue": "@trigger().outputs.windowEndTime\n"
 		}
 	},
 	"variables": {
@@ -999,45 +1027,72 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_keyvault_source')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
+			"name": "[concat(parameters('factoryName'), '/scheduletrigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_keyvault_sql",
-					"type": "LinkedServiceReference"
-				},
 				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "incrementalload",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"tablelist": "[parameters('scheduletrigger_properties_incrementalload_parameters_tablelist')]"
+						}
+					}
+				],
+				"type": "ScheduleTrigger",
 				"typeProperties": {
-					"schema": "dbo",
-					"table": "balaji"
+					"recurrence": {
+						"frequency": "Minute",
+						"interval": 15,
+						"startTime": "2024-03-20T22:19:00",
+						"endTime": "2024-03-20T23:00:00",
+						"timeZone": "India Standard Time"
+					}
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_keyvault_sql')]"
+				"[concat(variables('factoryId'), '/pipelines/incrementalload')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_keyvaultsql_source')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
+			"name": "[concat(parameters('factoryName'), '/tumbling_window')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_keyvault_sql",
-					"type": "LinkedServiceReference"
-				},
+				"description": "sales_tumbling",
 				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [],
+				"runtimeState": "Started",
+				"pipeline": {
+					"pipelineReference": {
+						"referenceName": "sales_tumbling",
+						"type": "PipelineReference"
+					},
+					"parameters": {
+						"startdate": "[parameters('tumbling_window_properties_pipeline_parameters_startdate')]",
+						"enddate": "[parameters('tumbling_window_properties_pipeline_parameters_enddate')]"
+					}
+				},
+				"type": "TumblingWindowTrigger",
 				"typeProperties": {
-					"schema": "dbo",
-					"table": "cricket"
+					"frequency": "Hour",
+					"interval": 24,
+					"startTime": "2023-06-30T18:51:00Z",
+					"endTime": "2023-07-08T18:51:00Z",
+					"delay": "00:00:00",
+					"maxConcurrency": 50,
+					"retryPolicy": {
+						"intervalInSeconds": 30
+					},
+					"dependsOn": []
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_keyvault_sql')]"
+				"[concat(variables('factoryId'), '/pipelines/sales_tumbling')]"
 			]
 		}
 	]
