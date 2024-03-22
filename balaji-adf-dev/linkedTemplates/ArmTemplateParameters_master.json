@@ -1,0 +1,46 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "balaji-adf-dev"
+		},
+		"ls_source_sql_connectionString": {
+			"value": ""
+		},
+		"ls_target_sql_connectionString": {
+			"value": ""
+		},
+		"scheduletrigger_properties_incrementalload_parameters_tablelist": {
+			"value": [
+				{
+					"tableName": "iplteams",
+					"tableSchemaName": "dbo",
+					"WaterMark_Column": "last_updated"
+				},
+				{
+					"tableName": "employees",
+					"tableSchemaName": "dbo",
+					"WaterMark_Column": "last_updated"
+				},
+				{
+					"tableName": "salesitems",
+					"tableSchemaName": "dbo",
+					"WaterMark_Column": "last_updated"
+				}
+			]
+		},
+		"tumbling_window_properties_pipeline_parameters_startdate": {
+			"value": "@trigger().outputs.windowStartTime\n"
+		},
+		"tumbling_window_properties_pipeline_parameters_enddate": {
+			"value": "@trigger().outputs.windowEndTime\n"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}

@@ -1,0 +1,93 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "balaji-adf-dev"
+		},
+		"ls_source_sql_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_source_sql'"
+		},
+		"ls_target_sql_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_target_sql'"
+		},
+		"scheduletrigger_properties_incrementalload_parameters_tablelist": {
+			"type": "array",
+			"defaultValue": [
+				{
+					"tableName": "iplteams",
+					"tableSchemaName": "dbo",
+					"WaterMark_Column": "last_updated"
+				},
+				{
+					"tableName": "employees",
+					"tableSchemaName": "dbo",
+					"WaterMark_Column": "last_updated"
+				},
+				{
+					"tableName": "salesitems",
+					"tableSchemaName": "dbo",
+					"WaterMark_Column": "last_updated"
+				}
+			]
+		},
+		"tumbling_window_properties_pipeline_parameters_startdate": {
+			"type": "string",
+			"defaultValue": "@trigger().outputs.windowStartTime\n"
+		},
+		"tumbling_window_properties_pipeline_parameters_enddate": {
+			"type": "string",
+			"defaultValue": "@trigger().outputs.windowEndTime\n"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "balaji-adf-dev_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"ls_source_sql_connectionString": {
+						"value": "[parameters('ls_source_sql_connectionString')]"
+					},
+					"ls_target_sql_connectionString": {
+						"value": "[parameters('ls_target_sql_connectionString')]"
+					},
+					"scheduletrigger_properties_incrementalload_parameters_tablelist": {
+						"value": "[parameters('scheduletrigger_properties_incrementalload_parameters_tablelist')]"
+					},
+					"tumbling_window_properties_pipeline_parameters_startdate": {
+						"value": "[parameters('tumbling_window_properties_pipeline_parameters_startdate')]"
+					},
+					"tumbling_window_properties_pipeline_parameters_enddate": {
+						"value": "[parameters('tumbling_window_properties_pipeline_parameters_enddate')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
