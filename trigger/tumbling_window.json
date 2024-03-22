@@ -1,0 +1,31 @@
+{
+	"name": "tumbling_window",
+	"properties": {
+		"description": "sales_tumbling",
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipeline": {
+			"pipelineReference": {
+				"referenceName": "sales_tumbling",
+				"type": "PipelineReference"
+			},
+			"parameters": {
+				"startdate": "@trigger().outputs.windowStartTime\n",
+				"enddate": "@trigger().outputs.windowEndTime\n"
+			}
+		},
+		"type": "TumblingWindowTrigger",
+		"typeProperties": {
+			"frequency": "Hour",
+			"interval": 24,
+			"startTime": "2023-06-30T18:51:00Z",
+			"endTime": "2023-07-08T18:51:00Z",
+			"delay": "00:00:00",
+			"maxConcurrency": 50,
+			"retryPolicy": {
+				"intervalInSeconds": 30
+			},
+			"dependsOn": []
+		}
+	}
+}
